@@ -2,13 +2,15 @@ package ru.kuzmin.apicatalog.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @Entity
 @Table(name = "country", schema = "public")
 @Data
-public class Country {
+@EqualsAndHashCode(callSuper = true)
+public class Country extends Base{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "country_seq")
     private Long id;

@@ -6,14 +6,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "currency", schema = "public")
 @Data
-@RequiredArgsConstructor
-public class Currency {
+@EqualsAndHashCode(callSuper = true)
+public class Currency extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "currency_seq")
     private Long id;
