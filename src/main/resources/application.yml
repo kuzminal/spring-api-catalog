@@ -9,14 +9,21 @@ server:
   servlet:
     context-path: /api/catalog
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
     url: "jdbc:postgresql://localhost:5432/catalog?autoReconnect=true"
     username: postgres
     password: password
     driverClassName: org.postgresql.Driver
-    validation-query: select 1;
-    maxActive: 100
+    hikari:
+      maximum-pool-size: 90
+      connection-test-query: select 1;
   jpa:
     show-sql: false
     generate-ddl: false
     open-in-view: false
+    properties:
+      hibernate:
+        default_schema: public

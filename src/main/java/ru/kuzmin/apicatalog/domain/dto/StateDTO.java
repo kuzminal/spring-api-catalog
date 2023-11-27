@@ -1,9 +1,9 @@
 package ru.kuzmin.apicatalog.domain.dto;
 
-public record CurrencyDTO(
+public record StateDTO(
         Long id,
         String code,
-        String description,
+        String name,
         Boolean enabled,
-        Integer decimalPlaces
-) {}
+        CountryDTO country) {
+}

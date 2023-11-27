@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity
-@Table(name = "currency")
+@Table(name = "currency", schema = "public")
 @Data
 @RequiredArgsConstructor
 public class Currency {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "currency_seq")
     private Long id;
     private String code;
     private String description;
