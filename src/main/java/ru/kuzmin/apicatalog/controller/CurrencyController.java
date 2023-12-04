@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.kuzmin.apicatalog.domain.dto.CurrencyDTO;
 import ru.kuzmin.apicatalog.service.CurrrencyService;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/currency")
 public class CurrencyController {
@@ -19,8 +21,8 @@ public class CurrencyController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<CurrencyDTO> getById(@PathVariable Long id) {
-        CurrencyDTO response = currrencyService.getById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Optional<CurrencyDTO> response = currrencyService.getById(id);
+        return response.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -33,8 +35,8 @@ public class CurrencyController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<CurrencyDTO> update(@RequestBody CurrencyDTO
                                                       currencyDTO) {
-        CurrencyDTO response = currrencyService.update(currencyDTO);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Optional<CurrencyDTO> response = currrencyService.update(currencyDTO);
+        return response.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(value = "/{id}")

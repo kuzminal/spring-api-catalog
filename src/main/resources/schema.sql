@@ -5,7 +5,8 @@ create table if not exists city
     enabled    boolean,
     name       varchar(255),
     created_on timestamp not null,
-    updated_on timestamp not null
+    updated_on timestamp not null,
+    version    int       NOT NULL DEFAULT 0
 );
 
 create sequence if not exists city_seq
@@ -20,7 +21,8 @@ create table if not exists currency
     description    varchar(30),
     enabled        boolean,
     created_on     timestamp not null,
-    updated_on     timestamp not null
+    updated_on     timestamp not null,
+    version        int       NOT NULL DEFAULT 0
 );
 
 create sequence if not exists currency_seq
@@ -38,6 +40,7 @@ create table if not exists country
     currency_id bigint      not null,
     created_on  timestamp   not null,
     updated_on  timestamp   not null,
+    version     int         NOT NULL DEFAULT 0,
     foreign key (currency_id) references currency (id)
 );
 
@@ -54,6 +57,7 @@ create table if not exists state
     country_id bigint    not null,
     created_on timestamp not null,
     updated_on timestamp not null,
+    version    int       NOT NULL DEFAULT 0,
     foreign key (country_id) references country (id)
 );
 

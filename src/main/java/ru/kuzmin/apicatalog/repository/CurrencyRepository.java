@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.kuzmin.apicatalog.domain.entity.Currency;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CurrencyRepository extends CrudRepository<Currency, Long> {

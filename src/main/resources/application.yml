@@ -18,7 +18,7 @@ spring:
     password: password
     driverClassName: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 90
+      maximum-pool-size: 25
       connection-test-query: select 1;
   jpa:
     show-sql: false

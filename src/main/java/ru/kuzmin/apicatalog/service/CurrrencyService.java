@@ -4,11 +4,16 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.kuzmin.apicatalog.domain.dto.CurrencyDTO;
 import ru.kuzmin.apicatalog.domain.entity.Currency;
 import ru.kuzmin.apicatalog.mapper.ApiMapper;
 import ru.kuzmin.apicatalog.repository.CurrencyRepository;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,19 +21,27 @@ import java.util.Set;
 public class CurrrencyService {
     private final CurrencyRepository repository;
     private final Validator validator;
+    private final TransactionTemplate transactionTemplate;
+    private final PlatformTransactionManager transactionManager;
 
-    public CurrrencyService(CurrencyRepository repository, Validator validator) {
+    public CurrrencyService(CurrencyRepository repository, Validator validator, TransactionTemplate transactionTemplate, PlatformTransactionManager transactionManager) {
         this.repository = repository;
         this.validator = validator;
+        this.transactionManager = transactionManager;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.setReadOnly(false);
+        transactionTemplate.setTimeout(1000);
     }
 
-    public CurrencyDTO getById(Long id) {
-        CurrencyDTO response = null;
+    @Transactional(
+            readOnly = true,
+            rollbackFor = {SQLException.class},
+            isolation = Isolation.READ_COMMITTED,
+            timeout = 1000
+    )
+    public Optional<CurrencyDTO> getById(Long id) {
         Optional<Currency> currency = repository.findById(id);
-        if (currency.isPresent()) {
-            response = ApiMapper.INSTANCE.entityToDTO(currency.get());
-        }
-        return response;
+        return currency.map(ApiMapper.INSTANCE::entityToDTO);
     }
 
     public CurrencyDTO save(CurrencyDTO currencyDTO) {
@@ -38,12 +51,29 @@ public class CurrrencyService {
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
-        Currency savedEntity = repository.save(entity);
+        Currency savedEntity = this.transactionTemplate.execute(status -> repository.save(entity));
+
         return ApiMapper.INSTANCE.entityToDTO(savedEntity);
     }
 
-    public CurrencyDTO update(CurrencyDTO currencyDTO) {
-        return currencyDTO;
+    public Optional<CurrencyDTO> update(CurrencyDTO currencyDTO) {
+        Currency entity = ApiMapper.INSTANCE.DTOToEntity(currencyDTO);
+        Set<ConstraintViolation<Currency>> violations = validator.
+                validate(entity);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+        Currency savedEntity = this.transactionTemplate.execute(status -> {
+                Optional<Currency> dbCurrency = repository.findById(currencyDTO.id());
+                if (dbCurrency.isPresent()) {
+                    Currency forSave = repository.save(ApiMapper.INSTANCE.DTOToEntity(currencyDTO));
+                    return repository.save(ApiMapper.INSTANCE.DTOToEntity(currencyDTO));
+                } else {
+                    return null;
+                }
+        });
+
+        return savedEntity != null ? Optional.of(ApiMapper.INSTANCE.entityToDTO(savedEntity)) : Optional.empty();
     }
 
     public void delete(Long id) {
