@@ -3,6 +3,7 @@ package ru.kuzmin.apicatalog.service;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
@@ -37,6 +38,7 @@ public class CurrencyService {
             isolation = Isolation.READ_COMMITTED,
             timeout = 1000
     )
+    @Cacheable(cacheNames = "CATALOG_CURRENCY", unless = "#result.empty()")
     public Optional<CurrencyDTO> getById(Long id) {
         Optional<Currency> currency = repository.findById(id);
         return currency.map(ApiMapper.INSTANCE::entityToDTO);

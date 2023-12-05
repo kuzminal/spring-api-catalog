@@ -27,3 +27,9 @@ spring:
     properties:
       hibernate:
         default_schema: public
+cache:
+  configuration:
+    CATALOG_COUNTRY:
+      refreshAfterWriteTime: 1
+      expireAfterWriteTime: 1
+      maxSize: 180
