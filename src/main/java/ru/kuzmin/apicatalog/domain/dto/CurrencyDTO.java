@@ -11,4 +11,8 @@ public record CurrencyDTO(
         LocalDateTime createdOn,
         LocalDateTime updatedOn,
         Long version
-) {}
+) {
+    public CurrencyDTO(String code, String description, Boolean enabled, int decimalPlaces) {
+        this(0L, code, description, enabled, decimalPlaces, null, null, 0L);
+    }
+}

@@ -18,16 +18,14 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class CurrrencyService {
+public class CurrencyService {
     private final CurrencyRepository repository;
     private final Validator validator;
     private final TransactionTemplate transactionTemplate;
-    private final PlatformTransactionManager transactionManager;
 
-    public CurrrencyService(CurrencyRepository repository, Validator validator, TransactionTemplate transactionTemplate, PlatformTransactionManager transactionManager) {
+    public CurrencyService(CurrencyRepository repository, Validator validator, TransactionTemplate transactionTemplate, PlatformTransactionManager transactionManager) {
         this.repository = repository;
         this.validator = validator;
-        this.transactionManager = transactionManager;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setReadOnly(false);
         transactionTemplate.setTimeout(1000);
